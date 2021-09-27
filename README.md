@@ -20,3 +20,57 @@ Mean Shift 알고리즘은 영상에서 사물을 추적할 때도 쓰일 수 �
 4. 2번과 3번의 단계를 수렴할 때 까지 진행합니다.
 
 ## 구현 과정 
+
+### Data Generation
+
+2차원 공간에 데이터를 배치합니다. 
+
+```
+NOISE = 0.02
+mat_covs = np.array([[[4,2.5],[2.5,4]],[[1,0],[0,4]],[[1,0],[0,1]],[[1,0],[0,1]]])*NOISE
+
+mus =  np.array([[1,1],[0,0],[1.5,0.5],[-.5,1.2]])
+Ns = np.array([400,400,400,400])
+clss = [1,2,3,4]
+
+X = np.zeros((0,mus.shape[1]))
+Y = np.zeros(0)
+
+for mu, mat_cov, N, cls in zip(mus, mat_covs, Ns, clss):
+    X_ = np.random.multivariate_normal(mu, mat_cov, N)
+    Y_ = np.ones(N)*cls
+    X = np.vstack((X,X_))
+    Y = np.hstack((Y,Y_))
+    
+X1MAX = max(X[:,0])
+X1MIN = min(X[:,0])
+X2MAX = max(X[:,1]) 
+X2MIN = min(X[:,1])
+
+# X1MAX = -1
+# X1MIN = 2
+# X2MAX = -1
+# X2MIN = 2
+    
+def plot_data(X,Y, mus=None):
+    cls_unique = np.unique(Y)
+    legends = []
+    for cls in cls_unique:
+        idx = Y==cls
+        plt.plot(X[idx,0],X[idx,1],'.')
+        legends.append(cls.astype('int'))
+        
+    if mus is not None:
+        plt.plot(mus[:,0],mus[:,1],'kx')
+
+    plt.xlabel('X1')
+    plt.ylabel('X2')
+    plt.legend(legends)
+    plt.grid(True)
+    plt.xlim([X1MIN,X1MAX])
+    plt.ylim([X2MIN,X2MAX])
+    plt.show()
+    
+plot_data(X,Y)
+```
+### K-means Algorithmn
