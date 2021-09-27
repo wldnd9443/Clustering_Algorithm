@@ -96,6 +96,44 @@ for it in range(N_iter):
         mus[k,:] = X[I,:].mean(axis=0) # measurement step
     plot_data(X,clss,mus=mus)
 ```
+
 ![k-means_result](https://user-images.githubusercontent.com/44831709/134936396-0eb2d763-7122-4450-b2ad-4e3575032e1d.png)
 
 ### Mean Shift Algorithmn
+```
+N_iter = 5
+N_frame  = 3
+k = 10
+
+I_frame = I_frame = np.floor(np.arange(1,N_frame+1)/N_frame*N_iter).astype('int')-1
+
+eps = 0.5
+
+np.random.seed(3)
+
+mus = X[np.random.permutation(X.shape[0])[:k],:]
+
+
+clss = np.argmin(np.sum((X[:,None,:]-mus[None,:,:])**2,axis=2),axis=1)
+plot_data(X,clss,mus=mus)
+for it in range(N_iter):
+    uq_cls = np.arange(k)
+    for k,cls in enumerate(uq_cls):
+        dist = np.sqrt(np.sum((X-mus[k,:])**2,axis=1))
+        I = dist < eps
+        if I.size>0:
+            mus[k,:]=X[I,:].mean(axis=0)
+            
+    clss = np.argmin(dist_cls,axis=1)
+    dist_mus = np.sum((mus[:,None,:]-mus[None,:,:])**2,axis=2)
+    matches = np.arange(mus.shape[0])
+    for match in matches:
+        I = dist_mus[match,:] < 0.01
+        matches[I] = match
+
+    if it in I_frame:
+        plot_data(X,matches[clss],mus=mus)
+```
+
+![mean_shift_result](https://user-images.githubusercontent.com/44831709/134941144-241c435c-0d87-4c2e-aeaa-3f9a20c0538c.png)
+
