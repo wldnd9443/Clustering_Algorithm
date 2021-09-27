@@ -23,8 +23,7 @@ Mean Shift 알고리즘은 영상에서 사물을 추적할 때도 쓰일 수 �
 
 ### Data Generation
 
-2차원 공간에 데이터를 배치합니다. 
-
+2차원 공간에 직관적으로 4개의 군집을 이룰 수 있는 데이터를 배치합니다.
 ```
 NOISE = 0.02
 mat_covs = np.array([[[4,2.5],[2.5,4]],[[1,0],[0,4]],[[1,0],[0,1]],[[1,0],[0,1]]])*NOISE
@@ -73,4 +72,30 @@ def plot_data(X,Y, mus=None):
     
 plot_data(X,Y)
 ```
+![data_generation](https://user-images.githubusercontent.com/44831709/134933721-3f3befc6-1e5b-4b8b-9ae7-075aa462ee9a.png)
+
 ### K-means Algorithmn
+
+```
+N_iter = 5
+k = 4
+
+np.random.seed(5)
+mus1 = np.random.uniform(size = (k,1), low = X1MIN, high = X1MAX)
+mus2 = np.random.uniform(size = (k,1), low = X2MIN, high = X2MAX)
+mus = np.hstack((mus1,mus2))
+
+clss = np.argmin(np.sum((X[:,None,:]-mus[None,:,:])**2,axis=2),axis=1) # assignment step
+plot_data(X,clss,mus=mus)
+
+for it in range(N_iter):
+    clss = np.argmin(np.sum((X[:,None,:]-mus[None,:,:])**2,axis=2),axis=1) # assignment step
+    uq_cls = np.arange(k)
+    for k,cls in enumerate(uq_cls):
+        I = clss==cls
+        mus[k,:] = X[I,:].mean(axis=0) # measurement step
+    plot_data(X,clss,mus=mus)
+```
+![k-means_result](https://user-images.githubusercontent.com/44831709/134936396-0eb2d763-7122-4450-b2ad-4e3575032e1d.png)
+
+### Mean Shift Algorithmn
